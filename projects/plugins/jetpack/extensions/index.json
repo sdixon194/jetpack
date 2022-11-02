@@ -63,6 +63,7 @@
 		"recipe",
 		"v6-video-frame-poster",
 		"videopress/video-chapters"
+		"sharing-buttons"
 	],
 	"experimental": [ "ai-image", "ai-paragraph" ],
 	"no-post-editor": [
