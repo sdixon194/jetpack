@@ -157,7 +157,8 @@ class WPCOM_REST_API_V2_Endpoint_Memberships extends WP_REST_Controller {
 
 		if ( ( defined( 'IS_WPCOM' ) && IS_WPCOM ) ) {
 			require_lib( 'memberships' );
-			$connected_destination_account_id = Jetpack_Memberships::get_connected_account_id();
+			$connected_accounts_repository = A8C\Billingdaddy\Container::get_connected_accounts_repository();
+			$connected_destination_account_id = $connected_accounts_repository->get_connected_account_by_site_id( get_current_blog_id() );
 			if ( ! $connected_destination_account_id ) {
 				return new WP_Error( 'no-destination-account', __( 'Please set up a Stripe account for this site first', 'jetpack' ) );
 			}

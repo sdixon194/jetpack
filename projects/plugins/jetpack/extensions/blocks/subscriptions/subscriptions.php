@@ -819,7 +819,7 @@ function get_paywall_blocks( $newsletter_access_level ) {
 	// Only display this text when Stripe is connected and the post is marked for paid subscribers
 	if (
 		$newsletter_access_level === 'paid_subscribers'
-		&& ! empty( Jetpack_Memberships::get_connected_account_id() )
+		&& Jetpack_Memberships::has_connected_account()
 	) {
 		$access_level = __( 'paid subscribers', 'jetpack' );
 	}
