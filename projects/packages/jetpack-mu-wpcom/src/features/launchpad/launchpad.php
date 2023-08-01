@@ -176,6 +176,7 @@ function wpcom_launchpad_get_task_list_definitions() {
 				'customize_welcome_message',
 				'enable_subscribers_modal',
 				'manage_subscribers',
+				'manage_newsletter_paid_plan',
 			),
 			'is_enabled_callback' => 'wpcom_launchpad_is_paid_newsletter_enabled',
 		),
