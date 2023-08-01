@@ -303,6 +303,12 @@ function wpcom_launchpad_get_task_definitions() {
 			'is_complete_callback' => 'wpcom_is_task_option_completed',
 			'is_visible_callback'  => 'wpcom_has_goal_import_subscribers',
 		),
+		'manage_newsletter_plan'          => array(
+			'get_title'            => function () {
+				return __( 'Manage your paid Newsletter plan', 'jetpack-mu-wpcom' );
+			},
+			'is_complete_callback' => 'wpcom_is_task_option_completed',
+		),
 	);
 
 	$extended_task_definitions = apply_filters( 'wpcom_launchpad_extended_task_definitions', array() );
