@@ -2,6 +2,12 @@
 
 set -eo pipefail
 
+# Todo: if WooCommerce is installed, allow the Jetpack integration tests to run.
+if [[ "$WP_BRANCH" == "latest" && -d "/tmp/wordpress-$WP_BRANCH/src/wp-content/plugins/woocommerce" ]]; then
+	echo "Todo: Woo/JP integration tests should run."
+	export JETPACK_TEST_WOOCOMMERCE=1
+fi
+
 echo "::group::Jetpack tests"
 phpunit
 echo "::endgroup::"

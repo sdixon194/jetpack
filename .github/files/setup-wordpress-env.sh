@@ -129,6 +129,17 @@ for PLUGIN in projects/plugins/*/composer.json; do
 	echo "::endgroup::"
 done
 
+# Install WooCommerce plugin used for some Jetpack integration tests.
+# Todo: check the require paths being used by the Woo tests, they may need updating since the Woo repo structure changed.
+if [[ "$WP_BRANCH" == "latest" && "$PHP_VERSION" == "8.2" ]]; then # Todo: what PHP_VERSION variable is considered "default"?
+	echo "::group::Installing plugin WooCommerce into WordPress"
+	cd "/tmp/wordpress-$WP_BRANCH/src/wp-content/plugins"
+	git clone --depth=1 https://github.com/woocommerce/woocommerce.git
+	# Todo: not sure if anything needs to be installed/configured for the Woo repo here.
+	cd "$BASE"
+	echo "::endgroup::"
+fi
+
 cd "/tmp/wordpress-$WP_BRANCH"
 
 cp wp-tests-config-sample.php wp-tests-config.php
