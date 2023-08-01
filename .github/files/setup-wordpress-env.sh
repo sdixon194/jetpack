@@ -132,10 +132,11 @@ done
 # Install WooCommerce plugin used for some Jetpack integration tests.
 # Todo: check the require paths being used by the Woo tests, they may need updating since the Woo repo structure changed.
 echo "TESTING: $PHP_VERSION"
-if [[ "$WP_BRANCH" == "latest" ]]; then # Todo: what PHP_VERSION variable is considered "default"?
+if [[ "$WP_BRANCH" == "latest" && "$PHP_VERSION" == "8.2" ]]; then # Todo: what PHP_VERSION variable is considered "default"?
 	echo "::group::Installing plugin WooCommerce into WordPress"
-	cd "/tmp/wordpress-$WP_BRANCH/src/wp-content/plugins"
+	cd "/tmp"
 	git clone --depth=1 https://github.com/woocommerce/woocommerce.git
+	cp -r "/tmp/woocommerce/plugins/woocommerce" "/tmp/wordpress-$WP_BRANCH/src/wp-content/plugins"
 	# Todo: not sure if anything needs to be installed/configured for the Woo repo here.
 	cd "$BASE"
 	echo "::endgroup::"
