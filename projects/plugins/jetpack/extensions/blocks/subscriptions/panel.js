@@ -20,7 +20,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import { external, Icon } from '@wordpress/icons';
 import { store as membershipProductsStore } from '../../store/membership-products';
 import { getSubscriberCounts } from './api';
-import { META_NAME_FOR_POST_LEVEL_ACCESS_SETTINGS, accessOptions } from './constants';
+import { accessOptions } from './constants';
 import EmailPreview from './email-preview';
 import {
 	Link,
@@ -28,7 +28,7 @@ import {
 	NewsletterAccessDocumentSettings,
 	NewsletterAccessPrePublishSettings,
 } from './settings';
-import { isNewsletterFeatureEnabled } from './utils';
+import { GetAccessLevel, isNewsletterFeatureEnabled } from './utils';
 import { name } from './';
 
 import './panel.scss';
@@ -306,18 +306,13 @@ export default function SubscribePanels() {
 	const [ socialFollowers, setSocialFollowers ] = useState( null );
 	const [ emailSubscribers, setEmailSubscribers ] = useState( null );
 	const postType = useSelect( select => select( editorStore ).getCurrentPostType(), [] );
-	const [ postMeta = [], setPostMeta ] = useEntityProp( 'postType', postType, 'meta' );
+	const [ , setPostMeta ] = useEntityProp( 'postType', postType, 'meta' );
 	const [ isModalOpen, setIsModalOpen ] = useState( false );
+
 	const { tracks } = useAnalytics();
 
 	// Set the accessLevel to "everybody" when one is not defined
-	let accessLevel =
-		postMeta[ META_NAME_FOR_POST_LEVEL_ACCESS_SETTINGS ] ?? accessOptions.everybody.key;
-
-	// If accessLevel is ''
-	if ( ! accessLevel ) {
-		accessLevel = accessOptions.everybody.key;
-	}
+	const accessLevel = GetAccessLevel( postType );
 
 	useEffect( () => {
 		if ( ! isModuleActive ) {
