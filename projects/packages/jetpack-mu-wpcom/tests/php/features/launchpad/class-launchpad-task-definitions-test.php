@@ -76,6 +76,16 @@ class Launchpad_Task_Definitions_Test extends \WorDBless\BaseTestCase {
 	}
 
 	/**
+	 * Tests setting a task as incomplete after it was marked complete.
+	 */
+	public function test_wpcom_launchpad_revert_completed_status() {
+		wpcom_mark_launchpad_task_complete( 'test_task1' );
+		wpcom_mark_launchpad_task_incomplete( 'test_task1' );
+
+		$options = get_option( 'launchpad_checklist_tasks_statuses' );
+		$this->assertTrue( isset( $options['test_task1'] ) && ! $options['test_task1'] );
+	}
+	/**
 	 * Tests wether a correct amount of array elements get stored in the 'launchpad_checklist_tasks_statuses' option.
 	 */
 	public function test_correct_task_count() {

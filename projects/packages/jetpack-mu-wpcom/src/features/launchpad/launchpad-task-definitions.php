@@ -444,16 +444,17 @@ function wpcom_mark_launchpad_task_incomplete( $task_ids ) {
  * Updates task/s statuses. If a non-existent task is passed, it will be ignored.
  * It will trigger the completion event in Tracks for the tasks that were marked as complete.
  *
- * @param array $original_statuses Array of mappings [ task_id: string => status: bool ].
+ * @param array $new_statuses Array of mappings [ task_id: string => status: bool ].
  * @return bool True if the option where the statuses are stored was updated, false otherwise.
  */
-function wpcom_launchpad_update_task_status( $original_statuses ) {
+function wpcom_launchpad_update_task_status( $new_statuses ) {
 	$task_definitions = wpcom_launchpad_get_task_definitions();
 	$reverse_id_map   = wpcom_launchpad_get_reverse_id_mappings();
 
-	$statuses        = array();
-	$completed_tasks = array();
-	foreach ( $original_statuses as $task_id => $value ) {
+	$statuses               = array();
+	$original_status_values = (array) get_option( 'launchpad_checklist_tasks_statuses', array() );
+
+	foreach ( $new_statuses as $task_id => $value ) {
 		// Find out wether the task id sent is the actual task id or the id_map.
 		$actual_task_id = ( isset( $reverse_id_map[ $task_id ] ) ) ? $reverse_id_map[ $task_id ] : $task_id;
 		if ( ! isset( $task_definitions[ $actual_task_id ] ) ) {
@@ -466,22 +467,15 @@ function wpcom_launchpad_update_task_status( $original_statuses ) {
 		$stored_task_id              = isset( $task['id_map'] ) ? $task['id_map'] : $actual_task_id;
 		$statuses[ $stored_task_id ] = $value;
 
-		if ( $value ) {
-			$completed_tasks[] = $actual_task_id;
+		// If we're completing a task for the first time, track that completion via the supplied task ID.
+		if ( $value && empty( $original_status_values[ $stored_task_id ] ) ) {
+			wpcom_launchpad_track_completed_task( $actual_task_id );
 		}
 	}
 
-	$old_values = (array) get_option( 'launchpad_checklist_tasks_statuses', array() );
-	$new_values = array_merge( $old_values, $statuses );
+	$new_values = array_merge( $original_status_values, $statuses );
 
-	$result = update_option( 'launchpad_checklist_tasks_statuses', $new_values );
-
-	// Record the completion event in Tracks.
-	foreach ( $completed_tasks as $task_id ) {
-		wpcom_launchpad_track_completed_task( $task_id );
-	}
-
-	return $result;
+	return update_option( 'launchpad_checklist_tasks_statuses', $new_values );
 }
 
 /**
