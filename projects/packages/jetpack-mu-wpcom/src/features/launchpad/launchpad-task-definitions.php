@@ -467,8 +467,11 @@ function wpcom_launchpad_update_task_status( $new_statuses ) {
 		$stored_task_id              = isset( $task['id_map'] ) ? $task['id_map'] : $actual_task_id;
 		$statuses[ $stored_task_id ] = $value;
 
-		// If we're completing a task for the first time, track that completion via the supplied task ID.
-		if ( $value && empty( $original_status_values[ $stored_task_id ] ) ) {
+		// If we're not completing an already complete task, track that completion via the supplied task ID.
+		if (
+			$value &&
+			( empty( $original_status_values[ $stored_task_id ] ) || $original_status_values[ $stored_task_id ] === false )
+		) {
 			wpcom_launchpad_track_completed_task( $actual_task_id );
 		}
 	}
