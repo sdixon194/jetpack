@@ -421,7 +421,7 @@ function wpcom_mark_launchpad_task_complete( $task_ids ) {
 	$task_ids = is_array( $task_ids ) ? $task_ids : array( $task_ids );
 	$values   = array_fill_keys( $task_ids, true );
 
-	$result = wpcom_update_launchpad_task_status( $values );
+	$result = wpcom_launchpad_update_task_status( $values );
 
 	return $result;
 }
@@ -437,7 +437,7 @@ function wpcom_mark_launchpad_task_incomplete( $task_ids ) {
 	$task_ids = is_array( $task_ids ) ? $task_ids : array( $task_ids );
 	$values   = array_fill_keys( $task_ids, false );
 
-	return wpcom_update_launchpad_task_status( $values );
+	return wpcom_launchpad_update_task_status( $values );
 }
 
 /**
@@ -447,7 +447,7 @@ function wpcom_mark_launchpad_task_incomplete( $task_ids ) {
  * @param array $original_statuses Array of mappings [ task_id: string => status: bool ].
  * @return bool True if the option where the statuses are stored was updated, false otherwise.
  */
-function wpcom_update_launchpad_task_status( $original_statuses ) {
+function wpcom_launchpad_update_task_status( $original_statuses ) {
 	$task_definitions = wpcom_launchpad_get_task_definitions();
 	$reverse_id_map   = wpcom_launchpad_get_reverse_id_mappings();
 
