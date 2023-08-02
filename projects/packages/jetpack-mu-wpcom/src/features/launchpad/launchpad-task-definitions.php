@@ -423,11 +423,6 @@ function wpcom_mark_launchpad_task_complete( $task_ids ) {
 
 	$result = wpcom_update_launchpad_task_status( $values );
 
-	// Record the completion event in Tracks.
-	foreach ( $task_ids as $key => $value ) {
-		wpcom_launchpad_track_completed_task( $key );
-	}
-
 	return $result;
 }
 
@@ -447,6 +442,7 @@ function wpcom_mark_launchpad_task_incomplete( $task_ids ) {
 
 /**
  * Updates task/s statuses. If a non-existent task is passed, it will be ignored.
+ * It will trigger the completion event in Tracks for the tasks that were marked as complete.
  *
  * @param array $original_statuses Array of mappings [ task_id: string => status: bool ].
  * @return bool True if the option where the statuses are stored was updated, false otherwise.
@@ -455,7 +451,8 @@ function wpcom_update_launchpad_task_status( $original_statuses ) {
 	$task_definitions = wpcom_launchpad_get_task_definitions();
 	$reverse_id_map   = wpcom_launchpad_get_reverse_id_mappings();
 
-	$statuses = array();
+	$statuses        = array();
+	$completed_tasks = array();
 	foreach ( $original_statuses as $task_id => $value ) {
 		// Find out wether the task id sent is the actual task id or the id_map.
 		$actual_task_id = ( isset( $reverse_id_map[ $task_id ] ) ) ? $reverse_id_map[ $task_id ] : $task_id;
@@ -468,12 +465,23 @@ function wpcom_update_launchpad_task_status( $original_statuses ) {
 		$task                        = $task_definitions[ $actual_task_id ];
 		$stored_task_id              = isset( $task['id_map'] ) ? $task['id_map'] : $actual_task_id;
 		$statuses[ $stored_task_id ] = $value;
+
+		if ( $value ) {
+			$completed_tasks[] = $actual_task_id;
+		}
 	}
 
 	$old_values = (array) get_option( 'launchpad_checklist_tasks_statuses', array() );
 	$new_values = array_merge( $old_values, $statuses );
 
-	return update_option( 'launchpad_checklist_tasks_statuses', $new_values );
+	$result = update_option( 'launchpad_checklist_tasks_statuses', $new_values );
+
+	// Record the completion event in Tracks.
+	foreach ( $completed_tasks as $task_id ) {
+		wpcom_launchpad_track_completed_task( $task_id );
+	}
+
+	return $result;
 }
 
 /**
