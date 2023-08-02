@@ -1,7 +1,7 @@
 <?php // phpcs:ignore WordPress.Files.FileName.InvalidClassFileName
 /**
  * Class for photon functionality.
- *
+ * Testing
  * @package automattic/jetpack-image-cdn
  */
 
